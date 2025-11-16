@@ -144,37 +144,39 @@ function App() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '20px',
+            padding: '12px 20px',
             textAlign: 'center',
-            gap: '20px'
+            gap: '12px',
+            overflow: 'auto'
           }}>
             {hasMoreProfiles && currentProfile ? (
               <>
                 {/* Premium Swipe Toggle */}
                 <div style={{
                   background: 'rgba(255, 255, 255, 0.15)',
-                  borderRadius: '16px',
-                  padding: '12px 20px',
+                  borderRadius: '12px',
+                  padding: '8px 16px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
+                  gap: '10px',
                   maxWidth: '350px',
                   width: '100%',
                   boxSizing: 'border-box',
+                  flexShrink: 0,
                 }}>
                   <div style={{ flex: 1 }}>
                     <div style={{
-                      fontSize: '0.9rem',
+                      fontSize: '0.85rem',
                       fontWeight: 'bold',
-                      marginBottom: '2px',
+                      marginBottom: '1px',
                     }}>
                       Premium Swipe
                     </div>
                     <div style={{
-                      fontSize: '0.75rem',
+                      fontSize: '0.7rem',
                       opacity: 0.8,
                     }}>
-                      Send {premiumTipAmount} DATY tokens with your like
+                      Send {premiumTipAmount} DATY with like
                     </div>
                   </div>
 

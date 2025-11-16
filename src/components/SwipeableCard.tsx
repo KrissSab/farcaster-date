@@ -204,14 +204,14 @@ export const SwipeableCard = ({ profile, onSwipeLeft, onSwipeRight, isPremium = 
       {/* Profile image */}
       <div style={{
         width: '100%',
-        height: '400px',
+        height: '340px',
         background: profile.pfpUrl
           ? `url(${profile.pfpUrl}) center/cover`
           : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontSize: '8rem',
+        fontSize: '6rem',
         color: 'white',
       }}>
         {!profile.pfpUrl && '💜'}
@@ -219,29 +219,29 @@ export const SwipeableCard = ({ profile, onSwipeLeft, onSwipeRight, isPremium = 
 
       {/* Profile info */}
       <div style={{
-        padding: '24px',
+        padding: '16px 20px',
         color: '#333',
       }}>
         <h2 style={{
-          fontSize: '1.8rem',
-          margin: '0 0 8px 0',
+          fontSize: '1.5rem',
+          margin: '0 0 4px 0',
           fontWeight: 'bold',
         }}>
           {profile.displayName}
         </h2>
         <p style={{
-          fontSize: '1rem',
-          margin: '0 0 12px 0',
+          fontSize: '0.9rem',
+          margin: '0 0 8px 0',
           color: '#666',
         }}>
           @{profile.username}
         </p>
         {profile.bio && (
           <p style={{
-            fontSize: '1rem',
+            fontSize: '0.9rem',
             margin: '0',
             color: '#444',
-            lineHeight: '1.5',
+            lineHeight: '1.4',
           }}>
             {profile.bio}
           </p>
