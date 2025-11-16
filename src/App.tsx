@@ -13,7 +13,19 @@ type View = 'dating' | 'matches' | 'profile' | 'settings' | 'marketplace'
 
 function App() {
   const { user, isLoading, isAuthenticated } = useAuth()
-  const { currentProfile, hasMoreProfiles, matches, matchCount, handleLike, handlePass, handleRemoveMatch } = useDating()
+  const {
+    currentProfile,
+    hasMoreProfiles,
+    matches,
+    matchCount,
+    handleLike,
+    handlePremiumLike,
+    handlePass,
+    handleRemoveMatch,
+    isPremiumMode,
+    setIsPremiumMode,
+    premiumTipAmount,
+  } = useDating()
   const { showCheckInModal, checkInReward, streak, canClaimToday, weekDays, claimCheckIn, closeModal, openCheckInModal } = useCheckIn()
   const [currentView, setCurrentView] = useState<View>('dating')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -137,11 +149,74 @@ function App() {
             gap: '20px'
           }}>
             {hasMoreProfiles && currentProfile ? (
-              <SwipeableCard
-                profile={currentProfile}
-                onSwipeLeft={handlePass}
-                onSwipeRight={handleLike}
-              />
+              <>
+                {/* Premium Swipe Toggle */}
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  borderRadius: '16px',
+                  padding: '12px 20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  maxWidth: '350px',
+                  width: '100%',
+                  boxSizing: 'border-box',
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      fontWeight: 'bold',
+                      marginBottom: '2px',
+                    }}>
+                      Premium Swipe
+                    </div>
+                    <div style={{
+                      fontSize: '0.75rem',
+                      opacity: 0.8,
+                    }}>
+                      Send {premiumTipAmount} DATY tokens with your like
+                    </div>
+                  </div>
+
+                  {/* Toggle Switch */}
+                  <button
+                    onClick={() => setIsPremiumMode(!isPremiumMode)}
+                    style={{
+                      width: '52px',
+                      height: '28px',
+                      borderRadius: '14px',
+                      border: 'none',
+                      background: isPremiumMode
+                        ? 'rgba(81, 207, 102, 0.9)'
+                        : 'rgba(255, 255, 255, 0.3)',
+                      cursor: 'pointer',
+                      position: 'relative',
+                      transition: 'background 0.2s',
+                      padding: 0,
+                    }}
+                  >
+                    <div style={{
+                      width: '22px',
+                      height: '22px',
+                      borderRadius: '50%',
+                      background: 'white',
+                      position: 'absolute',
+                      top: '3px',
+                      left: isPremiumMode ? '27px' : '3px',
+                      transition: 'left 0.2s',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+                    }} />
+                  </button>
+                </div>
+
+                <SwipeableCard
+                  profile={currentProfile}
+                  onSwipeLeft={handlePass}
+                  onSwipeRight={isPremiumMode ? handlePremiumLike : handleLike}
+                  isPremium={isPremiumMode}
+                  premiumAmount={premiumTipAmount}
+                />
+              </>
             ) : (
             <div style={{
               textAlign: 'center',

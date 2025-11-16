@@ -12,9 +12,11 @@ interface SwipeableCardProps {
   profile: Profile
   onSwipeLeft: () => void
   onSwipeRight: () => void
+  isPremium?: boolean
+  premiumAmount?: number
 }
 
-export const SwipeableCard = ({ profile, onSwipeLeft, onSwipeRight }: SwipeableCardProps) => {
+export const SwipeableCard = ({ profile, onSwipeLeft, onSwipeRight, isPremium = false, premiumAmount = 5 }: SwipeableCardProps) => {
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const [startPos, setStartPos] = useState({ x: 0, y: 0 })
@@ -136,14 +138,38 @@ export const SwipeableCard = ({ profile, onSwipeLeft, onSwipeRight }: SwipeableC
         userSelect: 'none',
       }}
     >
+      {/* Premium mode badge */}
+      {isPremium && (
+        <div style={{
+          position: 'absolute',
+          top: '16px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'linear-gradient(135deg, #ffd700 0%, #ffed4e 100%)',
+          color: '#333',
+          padding: '8px 16px',
+          borderRadius: '20px',
+          fontSize: '0.85rem',
+          fontWeight: 'bold',
+          zIndex: 10,
+          boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}>
+          <span style={{ fontSize: '1rem' }}>💎</span>
+          Premium Mode • {premiumAmount} DATY
+        </div>
+      )}
+
       {/* Swipe indicators */}
       {dragOffset.x > 20 && (
         <div style={{
           position: 'absolute',
           top: '20px',
           right: '20px',
-          background: '#51cf66',
-          color: 'white',
+          background: isPremium ? 'linear-gradient(135deg, #ffd700 0%, #ffed4e 100%)' : '#51cf66',
+          color: isPremium ? '#333' : 'white',
           padding: '12px 20px',
           borderRadius: '12px',
           fontSize: '1.2rem',
@@ -151,8 +177,9 @@ export const SwipeableCard = ({ profile, onSwipeLeft, onSwipeRight }: SwipeableC
           zIndex: 10,
           opacity: Math.min(Math.abs(dragOffset.x) / 100, 1),
           transform: `rotate(-15deg)`,
+          boxShadow: isPremium ? '0 4px 12px rgba(255, 215, 0, 0.5)' : 'none',
         }}>
-          LIKE
+          {isPremium ? '💎 PREMIUM' : 'LIKE'}
         </div>
       )}
       {dragOffset.x < -20 && (

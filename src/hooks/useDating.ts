@@ -9,6 +9,8 @@ interface Profile {
   bio?: string
 }
 
+const CHECKIN_STORAGE_KEY = 'daty_checkin_data'
+
 // Mock profiles for demo - in production, fetch from Farcaster API
 const MOCK_PROFILES: Profile[] = [
   {
@@ -108,6 +110,8 @@ export const useDating = () => {
   const [matches, setMatches] = useState<Profile[]>([])
   const [passed, setPassed] = useState<number[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [isPremiumMode, setIsPremiumMode] = useState(false)
+  const [premiumTipAmount, setPremiumTipAmount] = useState(5)
 
   // Load saved data on mount
   useEffect(() => {
@@ -117,6 +121,24 @@ export const useDating = () => {
     setMatches(savedLikes)
     setPassed(savedPassed)
   }, [])
+
+  // Helper function to deduct tokens from balance
+  const deductTokens = (amount: number): boolean => {
+    const stored = localStorage.getItem(CHECKIN_STORAGE_KEY)
+    if (!stored) return false
+
+    const data = JSON.parse(stored)
+    const currentBalance = data.tokensEarned || 0
+
+    if (currentBalance < amount) {
+      return false // Not enough tokens
+    }
+
+    // Deduct tokens
+    data.tokensEarned = currentBalance - amount
+    localStorage.setItem(CHECKIN_STORAGE_KEY, JSON.stringify(data))
+    return true
+  }
 
   // Filter out profiles that have been liked or passed
   const availableProfiles = allProfiles.filter(profile => {
@@ -137,6 +159,28 @@ export const useDating = () => {
 
     // Move to next profile
     setCurrentIndex((prev) => prev + 1)
+  }
+
+  const handlePremiumLike = () => {
+    if (!currentProfile) return
+
+    // Check if user has enough tokens
+    const success = deductTokens(premiumTipAmount)
+    if (!success) {
+      alert(`Not enough DATY tokens! You need ${premiumTipAmount} DATY to send a premium like.`)
+      return
+    }
+
+    // Add to matches and save to localStorage (same as regular like)
+    const newMatches = [...matches, currentProfile]
+    setMatches(newMatches)
+    storage.addLikedProfile(currentProfile)
+
+    // Move to next profile
+    setCurrentIndex((prev) => prev + 1)
+
+    // Optional: Show success message
+    // (In a real app, this would send tokens to the liked profile)
   }
 
   const handlePass = () => {
@@ -165,7 +209,12 @@ export const useDating = () => {
     matches,
     matchCount: matches.length,
     handleLike,
+    handlePremiumLike,
     handlePass,
     handleRemoveMatch,
+    isPremiumMode,
+    setIsPremiumMode,
+    premiumTipAmount,
+    setPremiumTipAmount,
   }
 }
