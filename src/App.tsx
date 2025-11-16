@@ -4,8 +4,9 @@ import { useDating } from './hooks/useDating'
 import { SwipeableCard } from './components/SwipeableCard'
 import { MatchesList } from './components/MatchesList'
 import { ProfilePage } from './components/ProfilePage'
+import { SettingsPage } from './components/SettingsPage'
 
-type View = 'dating' | 'matches' | 'profile'
+type View = 'dating' | 'matches' | 'profile' | 'settings'
 
 function App() {
   const { user, isLoading, isAuthenticated } = useAuth()
@@ -71,6 +72,8 @@ function App() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        maxHeight: '81px',
+        boxSizing: 'border-box',
       }}>
         <div style={{
           fontSize: '1.5rem',
@@ -89,19 +92,30 @@ function App() {
             borderRadius: '50%',
             width: '40px',
             height: '40px',
+            minWidth: '40px',
+            minHeight: '40px',
+            maxWidth: '40px',
+            maxHeight: '40px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            fontSize: '1.2rem',
-            color: 'white',
             padding: 0,
             flexShrink: 0,
-            fontFamily: 'Arial, sans-serif',
-            fontWeight: 'bold',
           }}
         >
-          ≡
+          <svg 
+            width="20" 
+            height="20" 
+            viewBox="0 0 20 20" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ display: 'block' }}
+          >
+            <rect x="2" y="4" width="16" height="2" rx="1" fill="white"/>
+            <rect x="2" y="9" width="16" height="2" rx="1" fill="white"/>
+            <rect x="2" y="14" width="16" height="2" rx="1" fill="white"/>
+          </svg>
         </button>
       </div>
 
@@ -162,8 +176,10 @@ function App() {
         </>
       ) : currentView === 'matches' ? (
         <MatchesList matches={matches} onRemove={handleRemoveMatch} />
-      ) : (
+      ) : currentView === 'profile' ? (
         <ProfilePage user={user!} />
+      ) : (
+        <SettingsPage />
       )}
 
       {/* Menu Drawer */}
@@ -203,6 +219,8 @@ function App() {
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
+              maxHeight: '81px',
+              boxSizing: 'border-box',
             }}>
               {user?.pfpUrl && (
                 <img
@@ -242,14 +260,37 @@ function App() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  fontSize: '1.5rem',
-                  color: 'white',
-                  lineHeight: 1,
                   padding: 0,
                   flexShrink: 0,
                 }}
               >
-                ✕
+                <svg 
+                  width="20" 
+                  height="20" 
+                  viewBox="0 0 20 20" 
+                  fill="none" 
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{ display: 'block' }}
+                >
+                  <rect 
+                    x="3.757" 
+                    y="15.556" 
+                    width="16" 
+                    height="2" 
+                    rx="1" 
+                    transform="rotate(-45 3.757 15.556)" 
+                    fill="white"
+                  />
+                  <rect 
+                    x="5.171" 
+                    y="4.243" 
+                    width="16" 
+                    height="2" 
+                    rx="1" 
+                    transform="rotate(45 5.171 4.243)" 
+                    fill="white"
+                  />
+                </svg>
               </button>
             </div>
 
@@ -351,10 +392,14 @@ function App() {
               }} />
 
               <button
+                onClick={() => {
+                  setCurrentView('settings')
+                  setIsMenuOpen(false)
+                }}
                 style={{
                   width: '100%',
                   padding: '16px 24px',
-                  background: 'transparent',
+                  background: currentView === 'settings' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
                   border: 'none',
                   color: 'white',
                   fontSize: '1rem',
@@ -363,6 +408,7 @@ function App() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '12px',
+                  fontWeight: currentView === 'settings' ? 'bold' : 'normal',
                 }}
               >
                 <span style={{ fontSize: '1.3rem' }}>⚙️</span>
