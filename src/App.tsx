@@ -13,7 +13,7 @@ type View = 'dating' | 'matches' | 'profile' | 'settings'
 function App() {
   const { user, isLoading, isAuthenticated } = useAuth()
   const { currentProfile, hasMoreProfiles, matches, matchCount, handleLike, handlePass, handleRemoveMatch } = useDating()
-  const { showCheckInModal, checkInReward, streak, closeModal } = useCheckIn()
+  const { showCheckInModal, checkInReward, streak, canClaimToday, weekDays, claimCheckIn, closeModal, openCheckInModal } = useCheckIn()
   const [currentView, setCurrentView] = useState<View>('dating')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -302,6 +302,42 @@ function App() {
               flex: 1,
               padding: '12px 0',
             }}>
+              {/* Streak Button */}
+              <button
+                onClick={() => {
+                  openCheckInModal()
+                  setIsMenuOpen(false)
+                }}
+                style={{
+                  width: '100%',
+                  padding: '16px 24px',
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'white',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  position: 'relative',
+                }}
+              >
+                <span style={{ fontSize: '1.3rem' }}>🔥</span>
+                <span>Daily Streak</span>
+                <span style={{
+                  marginLeft: 'auto',
+                  background: 'rgba(255, 215, 0, 0.3)',
+                  color: 'white',
+                  borderRadius: '10px',
+                  padding: '4px 10px',
+                  fontSize: '0.8rem',
+                  fontWeight: 'bold',
+                }}>
+                  {streak} {streak === 1 ? 'day' : 'days'}
+                </span>
+              </button>
+
               <button
                 onClick={() => {
                   setCurrentView('dating')
@@ -427,6 +463,9 @@ function App() {
         <CheckInModal
           reward={checkInReward}
           streak={streak}
+          canClaim={canClaimToday}
+          weekDays={weekDays}
+          onClaim={claimCheckIn}
           onClose={closeModal}
         />
       )}
