@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react'
+import sdk from '@farcaster/frame-sdk'
+import { parseEther } from 'viem'
+import { DATY_TOKEN_CONTRACT, TOKEN_PACKAGES_CRYPTO } from '../contracts/DatyToken'
 
 interface MarketplaceItem {
   id: string
@@ -109,6 +112,7 @@ export const MarketplacePage = () => {
   const [balance, setBalance] = useState(0)
   const [purchasedItems, setPurchasedItems] = useState<string[]>([])
   const [activeTab, setActiveTab] = useState<'buy' | 'spend'>('buy')
+  const [isPurchasing, setIsPurchasing] = useState(false)
 
   useEffect(() => {
     loadBalance()
@@ -127,6 +131,60 @@ export const MarketplacePage = () => {
     const stored = localStorage.getItem('daty_purchased_items')
     if (stored) {
       setPurchasedItems(JSON.parse(stored))
+    }
+  }
+
+  const handleBuyTokensCrypto = async (pkgIndex: number) => {
+    try {
+      setIsPurchasing(true)
+      const pkg = TOKEN_PACKAGES_CRYPTO[pkgIndex]
+      const totalTokens = pkg.amount + ('bonus' in pkg ? pkg.bonus : 0)
+
+      // Check if we're in localhost (mock mode)
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+
+      if (isLocalhost) {
+        // Mock purchase for development
+        if (window.confirm(`[DEV MODE] Purchase ${pkg.name} for ${pkg.ethPrice} ETH?\n\nYou will receive ${totalTokens} DATY tokens.`)) {
+          const stored = localStorage.getItem(STORAGE_KEY)
+          if (stored) {
+            const data = JSON.parse(stored)
+            data.tokensEarned = (data.tokensEarned || 0) + totalTokens
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+            setBalance(data.tokensEarned)
+            alert(`Success! You received ${totalTokens} DATY tokens!`)
+          }
+        }
+        return
+      }
+
+      // Real Farcaster transaction on Base Sepolia
+      // Note: This uses Farcaster Frames v2 transaction API
+      // @ts-ignore - SDK types may not be updated yet
+      const transactionId = await sdk.actions.sendTransaction({
+        chainId: 'eip155:84532', // Base Sepolia
+        to: DATY_TOKEN_CONTRACT.address,
+        value: parseEther(pkg.ethPrice).toString(),
+        data: '0x', // Empty data for simple ETH transfer
+      })
+
+      if (transactionId) {
+        // Transaction initiated successfully
+        // Add tokens to localStorage (in real app, you'd verify on-chain)
+        const stored = localStorage.getItem(STORAGE_KEY)
+        if (stored) {
+          const data = JSON.parse(stored)
+          data.tokensEarned = (data.tokensEarned || 0) + totalTokens
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+          setBalance(data.tokensEarned)
+          alert(`Transaction submitted! You will receive ${totalTokens} DATY tokens.`)
+        }
+      }
+    } catch (error) {
+      console.error('Purchase error:', error)
+      alert('Transaction failed. Please try again.')
+    } finally {
+      setIsPurchasing(false)
     }
   }
 
@@ -276,7 +334,101 @@ export const MarketplacePage = () => {
               fontWeight: 'bold',
               color: 'white',
             }}>
-              Token Packages
+              Buy with Crypto (Base Sepolia)
+            </h2>
+
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              marginBottom: '32px',
+            }}>
+              {TOKEN_PACKAGES_CRYPTO.map((pkg, index) => (
+                <div
+                  key={pkg.id}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    borderRadius: '16px',
+                    padding: '20px',
+                    color: '#333',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    border: ('bonus' in pkg && pkg.bonus) ? '2px solid #ffd700' : 'none',
+                  }}
+                >
+                  <div style={{
+                    fontSize: '3rem',
+                    minWidth: '60px',
+                    textAlign: 'center',
+                  }}>
+                    {pkg.icon}
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontSize: '1.1rem',
+                      fontWeight: 'bold',
+                      marginBottom: '4px',
+                    }}>
+                      {pkg.name}
+                      {'bonus' in pkg && pkg.bonus && (
+                        <span style={{
+                          marginLeft: '8px',
+                          fontSize: '0.8rem',
+                          background: '#ffd700',
+                          color: '#333',
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                        }}>
+                          +{pkg.bonus} Bonus!
+                        </span>
+                      )}
+                    </div>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#666',
+                      marginBottom: '4px',
+                    }}>
+                      {pkg.amount} {'bonus' in pkg && pkg.bonus ? `+ ${pkg.bonus} bonus` : ''} DATY tokens
+                    </div>
+                    <div style={{
+                      fontSize: '1.2rem',
+                      fontWeight: 'bold',
+                      color: '#51cf66',
+                    }}>
+                      {pkg.ethPrice} ETH
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleBuyTokensCrypto(index)}
+                    disabled={isPurchasing}
+                    style={{
+                      padding: '12px 24px',
+                      background: isPurchasing ? '#ccc' : '#51cf66',
+                      border: 'none',
+                      borderRadius: '12px',
+                      color: 'white',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      cursor: isPurchasing ? 'not-allowed' : 'pointer',
+                      minWidth: '80px',
+                    }}
+                  >
+                    {isPurchasing ? '...' : 'Buy'}
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <h2 style={{
+              fontSize: '1.3rem',
+              margin: '0 0 16px 0',
+              fontWeight: 'bold',
+              color: 'white',
+            }}>
+              Buy with Fiat (Mock)
             </h2>
 
             <div style={{

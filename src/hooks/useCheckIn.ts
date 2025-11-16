@@ -169,6 +169,29 @@ export const useCheckIn = () => {
   }
 
   const openCheckInModal = () => {
+    // Refresh week days to show current state
+    const days = getWeekDays()
+    setWeekDays(days)
+    
+    // Update streak and claim status
+    const data = getCheckInData()
+    const today = new Date().toISOString().split('T')[0]
+    const alreadyCheckedIn = data.weeklyCheckIns.includes(today)
+    
+    if (alreadyCheckedIn) {
+      setStreak(data.streak)
+      setCanClaimToday(false)
+    } else {
+      // Calculate potential reward
+      let newStreak = 1
+      if (data.lastCheckIn && isYesterday(data.lastCheckIn)) {
+        newStreak = data.streak + 1
+      }
+      setStreak(newStreak)
+      setCheckInReward(calculateReward(newStreak))
+      setCanClaimToday(true)
+    }
+    
     setShowCheckInModal(true)
   }
 
