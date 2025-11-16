@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'
-import { sdk } from '@farcaster/frame-sdk'
+import { useState } from 'react'
 import { useAuth } from './contexts/AuthContext'
 import { useDating } from './hooks/useDating'
 import { SwipeableCard } from './components/SwipeableCard'
@@ -12,23 +11,7 @@ function App() {
   const { user, isLoading, isAuthenticated } = useAuth()
   const { currentProfile, hasMoreProfiles, matches, matchCount, handleLike, handlePass, handleRemoveMatch } = useDating()
   const [currentView, setCurrentView] = useState<View>('dating')
-  const [bottomInset, setBottomInset] = useState(16)
-
-  // Get safe area insets from Farcaster SDK
-  useEffect(() => {
-    const getSafeArea = async () => {
-      try {
-        const context = await sdk.context
-        const inset = context.client.safeAreaInsets?.bottom || 0
-        // Add extra padding if there's a bottom inset (wallet button area)
-        setBottomInset(inset > 0 ? inset + 16 : 16)
-      } catch (error) {
-        console.log('Could not get safe area insets, using default')
-        setBottomInset(16)
-      }
-    }
-    getSafeArea()
-  }, [])
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   if (isLoading) {
     return (
@@ -76,46 +59,46 @@ function App() {
       display: 'flex',
       flexDirection: 'column',
       height: '100vh',
-      maxHeight: '100vh',
+      maxHeight: '695px',
       overflow: 'hidden',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       color: 'white',
       fontFamily: 'system-ui, -apple-system, sans-serif',
     }}>
-      {/* Header with user profile */}
+      {/* Header with logo and menu */}
       <div style={{
         padding: '20px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
       }}>
         <div style={{
+          fontSize: '1.5rem',
+          fontWeight: 'bold',
           display: 'flex',
           alignItems: 'center',
-          gap: '12px',
+          gap: '8px',
         }}>
-          {user?.pfpUrl && (
-            <img
-              src={user.pfpUrl}
-              alt="Profile"
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '50%',
-                border: '2px solid white'
-              }}
-            />
-          )}
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '1rem', fontWeight: 'bold' }}>
-              {user?.displayName || user?.username || 'Anonymous'}
-            </div>
-            {user?.username && (
-              <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>
-                @{user.username}
-              </div>
-            )}
-          </div>
-          <div style={{ fontSize: '1.5rem' }}>💜</div>
+          💜 <span>Daty</span>
         </div>
+        <button
+          onClick={() => setIsMenuOpen(true)}
+          style={{
+            background: 'rgba(255, 255, 255, 0.2)',
+            border: 'none',
+            borderRadius: '50%',
+            width: '40px',
+            height: '40px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            fontSize: '1.2rem',
+          }}
+        >
+          ☰
+        </button>
       </div>
 
       {/* Main content area */}
@@ -179,97 +162,205 @@ function App() {
         <ProfilePage user={user!} />
       )}
 
-      {/* Bottom Navigation */}
-      <div style={{
-        borderTop: '1px solid rgba(255, 255, 255, 0.2)',
-        background: 'rgba(102, 126, 234, 0.95)',
-        backdropFilter: 'blur(10px)',
-      }}>
-        {/* Navigation tabs */}
-        <div
-          style={{
-            display: 'flex',
-            gap: '8px',
-            padding: `12px 20px ${bottomInset}px`,
-          }}>
-          <button
-            onClick={() => setCurrentView('dating')}
+      {/* Menu Drawer */}
+      {isMenuOpen && (
+        <>
+          {/* Overlay */}
+          <div
+            onClick={() => setIsMenuOpen(false)}
             style={{
-              flex: 1,
-              padding: '14px 8px',
-              background: currentView === 'dating'
-                ? 'rgba(255, 255, 255, 0.3)'
-                : 'rgba(255, 255, 255, 0.1)',
-              border: 'none',
-              borderRadius: '12px',
-              color: 'white',
-              fontSize: '0.95rem',
-              fontWeight: currentView === 'dating' ? 'bold' : 'normal',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 999,
             }}
-          >
-            💝 Discover
-          </button>
-          <button
-            onClick={() => setCurrentView('matches')}
-            style={{
-              flex: 1,
-              padding: '14px 8px',
-              background: currentView === 'matches'
-                ? 'rgba(255, 255, 255, 0.3)'
-                : 'rgba(255, 255, 255, 0.1)',
-              border: 'none',
-              borderRadius: '12px',
-              color: 'white',
-              fontSize: '0.95rem',
-              fontWeight: currentView === 'matches' ? 'bold' : 'normal',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              position: 'relative',
+          />
+
+          {/* Drawer */}
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            width: '280px',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            boxShadow: '-4px 0 12px rgba(0, 0, 0, 0.3)',
+            zIndex: 1000,
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
+            {/* Menu Header */}
+            <div style={{
+              padding: '20px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-            }}
-          >
-            <span>💚 Matches</span>
-            {matchCount > 0 && (
-              <span style={{
-                background: '#51cf66',
-                color: 'white',
-                borderRadius: '10px',
-                padding: '2px 8px',
-                fontSize: '0.75rem',
-                fontWeight: 'bold',
-                minWidth: '20px',
-                textAlign: 'center',
-              }}>
-                {matchCount}
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => setCurrentView('profile')}
-            style={{
+              gap: '12px',
+            }}>
+              {user?.pfpUrl && (
+                <img
+                  src={user.pfpUrl}
+                  alt="Profile"
+                  style={{
+                    width: '50px',
+                    height: '50px',
+                    borderRadius: '50%',
+                    border: '2px solid white'
+                  }}
+                />
+              )}
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'white' }}>
+                  {user?.displayName || user?.username || 'Anonymous'}
+                </div>
+                {user?.username && (
+                  <div style={{ fontSize: '0.85rem', opacity: 0.8, color: 'white' }}>
+                    @{user.username}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '32px',
+                  height: '32px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  fontSize: '1.2rem',
+                  color: 'white',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Menu Items */}
+            <div style={{
               flex: 1,
-              padding: '14px 8px',
-              background: currentView === 'profile'
-                ? 'rgba(255, 255, 255, 0.3)'
-                : 'rgba(255, 255, 255, 0.1)',
-              border: 'none',
-              borderRadius: '12px',
-              color: 'white',
-              fontSize: '0.95rem',
-              fontWeight: currentView === 'profile' ? 'bold' : 'normal',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-          >
-            👤 Profile
-          </button>
-        </div>
-      </div>
+              padding: '12px 0',
+            }}>
+              <button
+                onClick={() => {
+                  setCurrentView('dating')
+                  setIsMenuOpen(false)
+                }}
+                style={{
+                  width: '100%',
+                  padding: '16px 24px',
+                  background: currentView === 'dating' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                  border: 'none',
+                  color: 'white',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  fontWeight: currentView === 'dating' ? 'bold' : 'normal',
+                }}
+              >
+                <span style={{ fontSize: '1.3rem' }}>💝</span>
+                <span>Discover</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setCurrentView('matches')
+                  setIsMenuOpen(false)
+                }}
+                style={{
+                  width: '100%',
+                  padding: '16px 24px',
+                  background: currentView === 'matches' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                  border: 'none',
+                  color: 'white',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  fontWeight: currentView === 'matches' ? 'bold' : 'normal',
+                  position: 'relative',
+                }}
+              >
+                <span style={{ fontSize: '1.3rem' }}>💚</span>
+                <span>Matches</span>
+                {matchCount > 0 && (
+                  <span style={{
+                    marginLeft: 'auto',
+                    background: '#51cf66',
+                    color: 'white',
+                    borderRadius: '10px',
+                    padding: '4px 10px',
+                    fontSize: '0.8rem',
+                    fontWeight: 'bold',
+                  }}>
+                    {matchCount}
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={() => {
+                  setCurrentView('profile')
+                  setIsMenuOpen(false)
+                }}
+                style={{
+                  width: '100%',
+                  padding: '16px 24px',
+                  background: currentView === 'profile' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                  border: 'none',
+                  color: 'white',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  fontWeight: currentView === 'profile' ? 'bold' : 'normal',
+                }}
+              >
+                <span style={{ fontSize: '1.3rem' }}>👤</span>
+                <span>Profile</span>
+              </button>
+
+              <div style={{
+                height: '1px',
+                background: 'rgba(255, 255, 255, 0.2)',
+                margin: '12px 24px',
+              }} />
+
+              <button
+                style={{
+                  width: '100%',
+                  padding: '16px 24px',
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'white',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                }}
+              >
+                <span style={{ fontSize: '1.3rem' }}>⚙️</span>
+                <span>Settings</span>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
