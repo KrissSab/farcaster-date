@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { sdk } from '@farcaster/frame-sdk'
 import { useAuth } from './contexts/AuthContext'
 import { useDating } from './hooks/useDating'
 import { SwipeableCard } from './components/SwipeableCard'
@@ -11,6 +12,23 @@ function App() {
   const { user, isLoading, isAuthenticated } = useAuth()
   const { currentProfile, hasMoreProfiles, matches, matchCount, handleLike, handlePass, handleRemoveMatch } = useDating()
   const [currentView, setCurrentView] = useState<View>('dating')
+  const [bottomInset, setBottomInset] = useState(16)
+
+  // Get safe area insets from Farcaster SDK
+  useEffect(() => {
+    const getSafeArea = async () => {
+      try {
+        const context = await sdk.context
+        const inset = context.client.safeAreaInsets?.bottom || 0
+        // Add extra padding if there's a bottom inset (wallet button area)
+        setBottomInset(inset > 0 ? inset + 16 : 16)
+      } catch (error) {
+        console.log('Could not get safe area insets, using default')
+        setBottomInset(16)
+      }
+    }
+    getSafeArea()
+  }, [])
 
   if (isLoading) {
     return (
@@ -169,11 +187,10 @@ function App() {
       }}>
         {/* Navigation tabs */}
         <div
-          className="bottom-nav-desktop"
           style={{
             display: 'flex',
             gap: '8px',
-            padding: '12px 20px 16px',
+            padding: `12px 20px ${bottomInset}px`,
           }}>
           <button
             onClick={() => setCurrentView('dating')}
