@@ -1,16 +1,19 @@
 import { useState } from 'react'
 import { useAuth } from './contexts/AuthContext'
 import { useDating } from './hooks/useDating'
+import { useCheckIn } from './hooks/useCheckIn'
 import { SwipeableCard } from './components/SwipeableCard'
 import { MatchesList } from './components/MatchesList'
 import { ProfilePage } from './components/ProfilePage'
 import { SettingsPage } from './components/SettingsPage'
+import { CheckInModal } from './components/CheckInModal'
 
 type View = 'dating' | 'matches' | 'profile' | 'settings'
 
 function App() {
   const { user, isLoading, isAuthenticated } = useAuth()
   const { currentProfile, hasMoreProfiles, matches, matchCount, handleLike, handlePass, handleRemoveMatch } = useDating()
+  const { showCheckInModal, checkInReward, streak, closeModal } = useCheckIn()
   const [currentView, setCurrentView] = useState<View>('dating')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -417,6 +420,15 @@ function App() {
             </div>
           </div>
         </>
+      )}
+
+      {/* Check-In Modal */}
+      {showCheckInModal && (
+        <CheckInModal
+          reward={checkInReward}
+          streak={streak}
+          onClose={closeModal}
+        />
       )}
     </div>
   )
