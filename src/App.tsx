@@ -164,15 +164,17 @@ function App() {
       {/* Bottom Navigation */}
       <div style={{
         borderTop: '1px solid rgba(255, 255, 255, 0.2)',
-        background: 'rgba(102, 126, 234, 0.3)',
+        background: 'rgba(102, 126, 234, 0.95)',
         backdropFilter: 'blur(10px)',
       }}>
         {/* Navigation tabs */}
-        <div style={{
-          display: 'flex',
-          gap: '8px',
-          padding: '12px 20px 16px',
-        }}>
+        <div
+          className="bottom-nav-desktop"
+          style={{
+            display: 'flex',
+            gap: '8px',
+            padding: '12px 20px 16px',
+          }}>
           <button
             onClick={() => setCurrentView('dating')}
             style={{

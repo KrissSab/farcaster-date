@@ -36,3 +36,17 @@ html, body, #root {
     color: #181818;
   }
 }
+
+/* Extra padding for wallet button on desktop */
+@media (min-width: 769px) {
+  .bottom-nav-desktop {
+    padding-bottom: 80px !important;
+  }
+}
+
+/* Normal padding on mobile */
+@media (max-width: 768px) {
+  .bottom-nav-desktop {
+    padding-bottom: 16px !important;
+  }
+}
