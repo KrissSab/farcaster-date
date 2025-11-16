@@ -1,18 +1,23 @@
 {
-    "accountAssociation": {
-      "header": "eyJmaWQiOjE0Nzg2MzQsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg2YkYwYWQxNWE3NGExMTIyMTUyYjJmOEVlQ2FGMjVGNTU2ZUY3ZjRCIn0",
-      "payload": "eyJkb21haW4iOiJmYXJjYXN0ZXItZGF0ZS52ZXJjZWwuYXBwIn0",
-      "signature": "ATqWNv86XBKI8YJo+Ni2noLctFKsELvDvbxmWe4TjmdHbg9DPDkjxSNpD9yQJO/BoPf5hDnR7n8SWK7xw+mfWRs="
-    },
-    "miniapp": {
-      "version": "1",
-      "name": "Daty",
-      "iconUrl": "https://farcaster-date.vercel.app/icon.png",
-      "homeUrl": "https://farcaster-date.vercel.app",
-      "imageUrl": "https://farcaster-date.vercel.app/image.png",
-      "buttonTitle": "Check this out",
-      "splashImageUrl": "https://farcaster-date.vercel.app/splash.png",
-      "splashBackgroundColor": "#eeccff",
-      "webhookUrl": "https://farcaster-date.vercel.app/api/webhook"
-    }
+  "accountAssociation": {
+    "header": "eyJmaWQiOjE0Nzg2MzQsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg2YkYwYWQxNWE3NGExMTIyMTUyYjJmOEVlQ2FGMjVGNTU2ZUY3ZjRCIn0",
+    "payload": "eyJkb21haW4iOiJmYXJjYXN0ZXItZGF0ZS52ZXJjZWwuYXBwIn0",
+    "signature": "ATqWNv86XBKI8YJo+Ni2noLctFKsELvDvbxmWe4TjmdHbg9DPDkjxSNpD9yQJO/BoPf5hDnR7n8SWK7xw+mfWRs="
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "Daty",
+    "subtitle": "Daty - Date on Farcaster",
+    "description": "Experience something amazing on Farcaster. Stay tuned for the official launch of Daty - your next favorite social app is almost here.",
+    "tagline": "Something amazing is coming",
+    "iconUrl": "https://farcaster-date.vercel.app/icon.png",
+    "homeUrl": "https://farcaster-date.vercel.app",
+    "imageUrl": "https://farcaster-date.vercel.app/image.png",
+    "heroImageUrl": "https://farcaster-date.vercel.app/hero.png",
+    "splashImageUrl": "https://farcaster-date.vercel.app/splash.png",
+    "splashBackgroundColor": "#eeccff",
+    "webhookUrl": "https://farcaster-date.vercel.app/api/webhook",
+    "primaryCategory": "social",
+    "tags": ["social", "community", "launch", "farcaster", "beta"]
   }
+}
