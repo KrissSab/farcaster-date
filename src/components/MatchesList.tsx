@@ -95,13 +95,40 @@ export const MatchesList = ({ matches, onRemove }: MatchesListProps) => {
               }}>
                 {profile.displayName}
               </h3>
-              <p style={{
-                fontSize: '0.9rem',
-                margin: '0 0 8px 0',
-                color: '#666',
-              }}>
+
+              {/* Farcaster Username - Clickable */}
+              <a
+                href={`https://warpcast.com/${profile.username}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: '0.9rem',
+                  margin: '0 0 8px 0',
+                  color: '#667eea',
+                  textDecoration: 'none',
+                  fontWeight: '600',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <span style={{ fontSize: '1rem' }}>🟣</span>
                 @{profile.username}
-              </p>
+              </a>
+
+              {/* "It's a match!" indicator */}
+              <div style={{
+                fontSize: '0.75rem',
+                color: '#51cf66',
+                fontWeight: 'bold',
+                marginBottom: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}>
+                <span>💚</span> It's a match! Connect on Farcaster
+              </div>
+
               {profile.bio && (
                 <p style={{
                   fontSize: '0.85rem',
