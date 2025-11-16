@@ -20,6 +20,7 @@ export const SwipeableCard = ({ profile, onSwipeLeft, onSwipeRight }: SwipeableC
   const [startPos, setStartPos] = useState({ x: 0, y: 0 })
   const cardRef = useRef<HTMLDivElement>(null)
 
+  // Touch handlers
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true)
     setStartPos({
@@ -41,6 +42,42 @@ export const SwipeableCard = ({ profile, onSwipeLeft, onSwipeRight }: SwipeableC
   }
 
   const handleTouchEnd = () => {
+    handleDragEnd()
+  }
+
+  // Mouse handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true)
+    setStartPos({
+      x: e.clientX,
+      y: e.clientY,
+    })
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return
+
+    const currentX = e.clientX
+    const currentY = e.clientY
+
+    setDragOffset({
+      x: currentX - startPos.x,
+      y: currentY - startPos.y,
+    })
+  }
+
+  const handleMouseUp = () => {
+    handleDragEnd()
+  }
+
+  const handleMouseLeave = () => {
+    if (isDragging) {
+      handleDragEnd()
+    }
+  }
+
+  // Unified drag end handler
+  const handleDragEnd = () => {
     setIsDragging(false)
 
     const threshold = 100
@@ -80,6 +117,10 @@ export const SwipeableCard = ({ profile, onSwipeLeft, onSwipeRight }: SwipeableC
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
       style={{
         width: '100%',
         maxWidth: '400px',

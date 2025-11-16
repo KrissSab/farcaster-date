@@ -57,7 +57,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
 
         // Production mode: use Farcaster SDK
-        await sdk.actions.ready()
+        // Disable native gestures to prevent accidental app closure while swiping cards
+        await sdk.actions.ready({ disableNativeGestures: true })
 
         // Get user context from SDK
         const context = await sdk.context
