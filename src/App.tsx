@@ -6,9 +6,10 @@ import { SwipeableCard } from './components/SwipeableCard'
 import { MatchesList } from './components/MatchesList'
 import { ProfilePage } from './components/ProfilePage'
 import { SettingsPage } from './components/SettingsPage'
+import { MarketplacePage } from './components/MarketplacePage'
 import { CheckInModal } from './components/CheckInModal'
 
-type View = 'dating' | 'matches' | 'profile' | 'settings'
+type View = 'dating' | 'matches' | 'profile' | 'settings' | 'marketplace'
 
 function App() {
   const { user, isLoading, isAuthenticated } = useAuth()
@@ -181,6 +182,8 @@ function App() {
         <MatchesList matches={matches} onRemove={handleRemoveMatch} />
       ) : currentView === 'profile' ? (
         <ProfilePage user={user!} />
+      ) : currentView === 'marketplace' ? (
+        <MarketplacePage />
       ) : (
         <SettingsPage />
       )}
@@ -422,6 +425,30 @@ function App() {
               >
                 <span style={{ fontSize: '1.3rem' }}>👤</span>
                 <span>Profile</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setCurrentView('marketplace')
+                  setIsMenuOpen(false)
+                }}
+                style={{
+                  width: '100%',
+                  padding: '16px 24px',
+                  background: currentView === 'marketplace' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                  border: 'none',
+                  color: 'white',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  fontWeight: currentView === 'marketplace' ? 'bold' : 'normal',
+                }}
+              >
+                <span style={{ fontSize: '1.3rem' }}>🛒</span>
+                <span>Marketplace</span>
               </button>
 
               <div style={{
