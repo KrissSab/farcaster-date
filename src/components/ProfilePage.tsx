@@ -11,14 +11,65 @@ interface ProfilePageProps {
   user: User
 }
 
+const PROFILE_STORAGE_KEY = 'daty_user_profile'
+const CHECKIN_STORAGE_KEY = 'daty_checkin_data'
+
+interface UserProfile {
+  displayName: string
+  bio: string
+  avatarUrl: string
+}
+
 export const ProfilePage = ({ user }: ProfilePageProps) => {
   const [datyBalance, setDatyBalance] = useState(0)
+  const [isEditing, setIsEditing] = useState(false)
+  const [profile, setProfile] = useState<UserProfile>({
+    displayName: user.displayName || user.username || 'Anonymous',
+    bio: '',
+    avatarUrl: user.pfpUrl || '',
+  })
+  const [editForm, setEditForm] = useState<UserProfile>(profile)
 
-  // Generate random DATY token balance on mount
+  // Load saved profile on mount
   useEffect(() => {
-    const randomBalance = Math.floor(Math.random() * 10000) + 100
-    setDatyBalance(randomBalance)
+    const saved = localStorage.getItem(PROFILE_STORAGE_KEY)
+    if (saved) {
+      const savedProfile = JSON.parse(saved)
+      setProfile(savedProfile)
+      setEditForm(savedProfile)
+    } else {
+      // Save initial profile
+      localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile))
+    }
   }, [])
+
+  // Load actual DATY token balance from check-in data
+  useEffect(() => {
+    const loadBalance = () => {
+      const stored = localStorage.getItem(CHECKIN_STORAGE_KEY)
+      if (stored) {
+        const data = JSON.parse(stored)
+        setDatyBalance(data.tokensEarned || 0)
+      }
+    }
+
+    loadBalance()
+
+    // Poll for balance updates every second
+    const interval = setInterval(loadBalance, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const handleSave = () => {
+    setProfile(editForm)
+    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(editForm))
+    setIsEditing(false)
+  }
+
+  const handleCancel = () => {
+    setEditForm(profile)
+    setIsEditing(false)
+  }
 
   return (
     <div style={{
@@ -39,50 +90,225 @@ export const ProfilePage = ({ user }: ProfilePageProps) => {
           marginBottom: '20px',
           color: '#333',
           textAlign: 'center',
+          position: 'relative',
         }}>
-          {/* Profile Picture */}
-          <div style={{
-            width: '120px',
-            height: '120px',
-            borderRadius: '50%',
-            background: user.pfpUrl
-              ? `url(${user.pfpUrl}) center/cover`
-              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            margin: '0 auto 16px',
-            border: '4px solid #667eea',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '3rem',
-            color: 'white',
-          }}>
-            {!user.pfpUrl && '💜'}
-          </div>
-
-          {/* User Info */}
-          <h1 style={{
-            fontSize: '2rem',
-            margin: '0 0 8px 0',
-            fontWeight: 'bold',
-          }}>
-            {user.displayName || user.username || 'Anonymous'}
-          </h1>
-          {user.username && (
-            <p style={{
-              fontSize: '1rem',
-              margin: '0 0 8px 0',
-              color: '#666',
-            }}>
-              @{user.username}
-            </p>
+          {/* Edit Button */}
+          {!isEditing && (
+            <button
+              onClick={() => setIsEditing(true)}
+              style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+                background: '#667eea',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '8px 16px',
+                color: 'white',
+                fontSize: '0.9rem',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              Edit Profile
+            </button>
           )}
-          <p style={{
-            fontSize: '0.9rem',
-            margin: '0',
-            color: '#888',
-          }}>
-            FID: {user.fid}
-          </p>
+
+          {isEditing ? (
+            /* Edit Mode */
+            <div style={{ textAlign: 'left' }}>
+              <h2 style={{
+                fontSize: '1.5rem',
+                margin: '0 0 20px 0',
+                fontWeight: 'bold',
+                textAlign: 'center',
+              }}>
+                Edit Profile
+              </h2>
+
+              {/* Avatar URL */}
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.9rem',
+                  marginBottom: '6px',
+                  fontWeight: 'bold',
+                  color: '#666',
+                }}>
+                  Avatar URL
+                </label>
+                <input
+                  type="text"
+                  value={editForm.avatarUrl}
+                  onChange={(e) => setEditForm({ ...editForm, avatarUrl: e.target.value })}
+                  placeholder="https://example.com/avatar.jpg"
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '2px solid #e0e0e0',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Display Name */}
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.9rem',
+                  marginBottom: '6px',
+                  fontWeight: 'bold',
+                  color: '#666',
+                }}>
+                  Display Name
+                </label>
+                <input
+                  type="text"
+                  value={editForm.displayName}
+                  onChange={(e) => setEditForm({ ...editForm, displayName: e.target.value })}
+                  placeholder="Your name"
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '2px solid #e0e0e0',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              {/* Bio */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.9rem',
+                  marginBottom: '6px',
+                  fontWeight: 'bold',
+                  color: '#666',
+                }}>
+                  Bio
+                </label>
+                <textarea
+                  value={editForm.bio}
+                  onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                  placeholder="Tell us about yourself..."
+                  rows={4}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '2px solid #e0e0e0',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    boxSizing: 'border-box',
+                    fontFamily: 'inherit',
+                    resize: 'vertical',
+                  }}
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+              }}>
+                <button
+                  onClick={handleSave}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    background: '#667eea',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: 'white',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Save Changes
+                </button>
+                <button
+                  onClick={handleCancel}
+                  style={{
+                    flex: 1,
+                    padding: '12px',
+                    background: '#e0e0e0',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#666',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* View Mode */
+            <>
+              {/* Profile Picture */}
+              <div style={{
+                width: '120px',
+                height: '120px',
+                borderRadius: '50%',
+                background: profile.avatarUrl
+                  ? `url(${profile.avatarUrl}) center/cover`
+                  : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                margin: '0 auto 16px',
+                border: '4px solid #667eea',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '3rem',
+                color: 'white',
+              }}>
+                {!profile.avatarUrl && '💜'}
+              </div>
+
+              {/* User Info */}
+              <h1 style={{
+                fontSize: '2rem',
+                margin: '0 0 8px 0',
+                fontWeight: 'bold',
+              }}>
+                {profile.displayName}
+              </h1>
+              {user.username && (
+                <p style={{
+                  fontSize: '1rem',
+                  margin: '0 0 8px 0',
+                  color: '#666',
+                }}>
+                  @{user.username}
+                </p>
+              )}
+              {profile.bio && (
+                <p style={{
+                  fontSize: '0.95rem',
+                  margin: '12px 0 8px 0',
+                  color: '#555',
+                  lineHeight: '1.5',
+                  maxWidth: '400px',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                }}>
+                  {profile.bio}
+                </p>
+              )}
+              <p style={{
+                fontSize: '0.9rem',
+                margin: '8px 0 0 0',
+                color: '#888',
+              }}>
+                FID: {user.fid}
+              </p>
+            </>
+          )}
         </div>
 
         {/* DATY Token Balance */}
