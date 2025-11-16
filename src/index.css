@@ -13,23 +13,26 @@
   -webkit-text-size-adjust: 100%;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     background-color: #f8f8f8;
     color: #181818;
-  }
-}
-
-/* Hide desktop-only elements on mobile */
-@media (max-width: 768px) {
-  .desktop-only {
-    display: none !important;
-  }
-}
-
-/* Show desktop-only elements on desktop */
-@media (min-width: 769px) {
-  .desktop-only {
-    display: flex !important;
   }
 }

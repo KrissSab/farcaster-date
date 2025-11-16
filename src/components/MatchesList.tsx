@@ -37,6 +37,7 @@ export const MatchesList = ({ matches, onRemove }: MatchesListProps) => {
       flex: 1,
       overflowY: 'auto',
       padding: '20px',
+      minHeight: 0,
     }}>
       <h2 style={{
         fontSize: '1.5rem',

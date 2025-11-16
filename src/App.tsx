@@ -57,7 +57,9 @@ function App() {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100vh',
+      height: '100vh',
+      maxHeight: '100vh',
+      overflow: 'hidden',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       color: 'white',
       fontFamily: 'system-ui, -apple-system, sans-serif',
@@ -165,70 +167,6 @@ function App() {
         background: 'rgba(102, 126, 234, 0.3)',
         backdropFilter: 'blur(10px)',
       }}>
-        {/* Action buttons for desktop - only show in dating view when there are profiles */}
-        {currentView === 'dating' && hasMoreProfiles && currentProfile && (
-          <div style={{
-            padding: '16px 20px',
-            display: 'flex',
-            gap: '20px',
-            justifyContent: 'center',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          }}
-          className="desktop-only"
-          >
-            <button
-              onClick={handlePass}
-              style={{
-                width: '70px',
-                height: '70px',
-                borderRadius: '50%',
-                border: '3px solid #ff6b6b',
-                background: 'white',
-                fontSize: '2rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'transform 0.2s',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-              }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.transform = 'scale(0.9)'
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.transform = 'scale(1)'
-              }}
-            >
-              ❌
-            </button>
-            <button
-              onClick={handleLike}
-              style={{
-                width: '70px',
-                height: '70px',
-                borderRadius: '50%',
-                border: '3px solid #51cf66',
-                background: 'white',
-                fontSize: '2rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'transform 0.2s',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-              }}
-              onMouseDown={(e) => {
-                e.currentTarget.style.transform = 'scale(0.9)'
-              }}
-              onMouseUp={(e) => {
-                e.currentTarget.style.transform = 'scale(1)'
-              }}
-            >
-              💚
-            </button>
-          </div>
-        )}
-
         {/* Navigation tabs */}
         <div style={{
           display: 'flex',
@@ -270,20 +208,23 @@ function App() {
               cursor: 'pointer',
               transition: 'all 0.2s',
               position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
             }}
           >
-            💚 Matches
+            <span>💚 Matches</span>
             {matchCount > 0 && (
               <span style={{
-                position: 'absolute',
-                top: '6px',
-                right: '6px',
                 background: '#51cf66',
                 color: 'white',
                 borderRadius: '10px',
                 padding: '2px 8px',
                 fontSize: '0.75rem',
                 fontWeight: 'bold',
+                minWidth: '20px',
+                textAlign: 'center',
               }}>
                 {matchCount}
               </span>

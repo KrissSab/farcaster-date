@@ -25,6 +25,7 @@ export const ProfilePage = ({ user }: ProfilePageProps) => {
       flex: 1,
       overflowY: 'auto',
       padding: '20px',
+      minHeight: 0,
     }}>
       <div style={{
         maxWidth: '600px',
