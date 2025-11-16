@@ -9,6 +9,49 @@ interface MarketplaceItem {
   category: 'boost' | 'feature' | 'cosmetic'
 }
 
+interface TokenPackage {
+  id: string
+  name: string
+  amount: number
+  price: number
+  bonus?: number
+  icon: string
+}
+
+const TOKEN_PACKAGES: TokenPackage[] = [
+  {
+    id: 'tokens_100',
+    name: 'Starter Pack',
+    amount: 100,
+    price: 0.99,
+    icon: '💎',
+  },
+  {
+    id: 'tokens_500',
+    name: 'Popular Pack',
+    amount: 500,
+    price: 4.99,
+    bonus: 50,
+    icon: '💎',
+  },
+  {
+    id: 'tokens_1000',
+    name: 'Best Value',
+    amount: 1000,
+    price: 8.99,
+    bonus: 200,
+    icon: '💎',
+  },
+  {
+    id: 'tokens_2500',
+    name: 'Premium Pack',
+    amount: 2500,
+    price: 19.99,
+    bonus: 750,
+    icon: '💎',
+  },
+]
+
 const MARKETPLACE_ITEMS: MarketplaceItem[] = [
   {
     id: 'profile_boost_24h',
@@ -65,6 +108,7 @@ const STORAGE_KEY = 'daty_checkin_data'
 export const MarketplacePage = () => {
   const [balance, setBalance] = useState(0)
   const [purchasedItems, setPurchasedItems] = useState<string[]>([])
+  const [activeTab, setActiveTab] = useState<'buy' | 'spend'>('buy')
 
   useEffect(() => {
     loadBalance()
@@ -83,6 +127,21 @@ export const MarketplacePage = () => {
     const stored = localStorage.getItem('daty_purchased_items')
     if (stored) {
       setPurchasedItems(JSON.parse(stored))
+    }
+  }
+
+  const handleBuyTokens = (pkg: TokenPackage) => {
+    if (window.confirm(`Purchase ${pkg.name} for $${pkg.price}?\n\nYou will receive ${pkg.amount}${pkg.bonus ? ` + ${pkg.bonus} bonus` : ''} DATY tokens.`)) {
+      // Add tokens to balance
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        const data = JSON.parse(stored)
+        const totalTokens = pkg.amount + (pkg.bonus || 0)
+        data.tokensEarned = (data.tokensEarned || 0) + totalTokens
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+        setBalance(data.tokensEarned)
+        alert(`Success! You received ${totalTokens} DATY tokens!`)
+      }
     }
   }
 
@@ -168,7 +227,147 @@ export const MarketplacePage = () => {
           </div>
         </div>
 
-        {/* Marketplace Items */}
+        {/* Tabs */}
+        <div style={{
+          display: 'flex',
+          gap: '12px',
+          marginBottom: '24px',
+        }}>
+          <button
+            onClick={() => setActiveTab('buy')}
+            style={{
+              flex: 1,
+              padding: '12px',
+              background: activeTab === 'buy' ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.1)',
+              border: activeTab === 'buy' ? '2px solid white' : '2px solid transparent',
+              borderRadius: '12px',
+              color: 'white',
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+            }}
+          >
+            💎 Buy Tokens
+          </button>
+          <button
+            onClick={() => setActiveTab('spend')}
+            style={{
+              flex: 1,
+              padding: '12px',
+              background: activeTab === 'spend' ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.1)',
+              border: activeTab === 'spend' ? '2px solid white' : '2px solid transparent',
+              borderRadius: '12px',
+              color: 'white',
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+            }}
+          >
+            🛒 Spend Tokens
+          </button>
+        </div>
+
+        {/* Buy Tokens Tab */}
+        {activeTab === 'buy' && (
+          <div>
+            <h2 style={{
+              fontSize: '1.3rem',
+              margin: '0 0 16px 0',
+              fontWeight: 'bold',
+              color: 'white',
+            }}>
+              Token Packages
+            </h2>
+
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+            }}>
+              {TOKEN_PACKAGES.map(pkg => (
+                <div
+                  key={pkg.id}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    borderRadius: '16px',
+                    padding: '20px',
+                    color: '#333',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '16px',
+                    border: pkg.bonus ? '2px solid #ffd700' : 'none',
+                  }}
+                >
+                  <div style={{
+                    fontSize: '3rem',
+                    minWidth: '60px',
+                    textAlign: 'center',
+                  }}>
+                    {pkg.icon}
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontSize: '1.1rem',
+                      fontWeight: 'bold',
+                      marginBottom: '4px',
+                    }}>
+                      {pkg.name}
+                      {pkg.bonus && (
+                        <span style={{
+                          marginLeft: '8px',
+                          fontSize: '0.8rem',
+                          background: '#ffd700',
+                          color: '#333',
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                        }}>
+                          +{pkg.bonus} Bonus!
+                        </span>
+                      )}
+                    </div>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: '#666',
+                      marginBottom: '4px',
+                    }}>
+                      {pkg.amount} {pkg.bonus ? `+ ${pkg.bonus} bonus` : ''} DATY tokens
+                    </div>
+                    <div style={{
+                      fontSize: '1.2rem',
+                      fontWeight: 'bold',
+                      color: '#51cf66',
+                    }}>
+                      ${pkg.price.toFixed(2)}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleBuyTokens(pkg)}
+                    style={{
+                      padding: '12px 24px',
+                      background: '#51cf66',
+                      border: 'none',
+                      borderRadius: '12px',
+                      color: 'white',
+                      fontSize: '1rem',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      minWidth: '80px',
+                    }}
+                  >
+                    Buy
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Spend Tokens Tab */}
+        {activeTab === 'spend' && (
+          <>
+            {/* Marketplace Items */}
         {categories.map(category => {
           const items = MARKETPLACE_ITEMS.filter(item => item.category === category)
           return (
@@ -277,6 +476,8 @@ export const MarketplacePage = () => {
             </div>
           )
         })}
+          </>
+        )}
       </div>
     </div>
   )
