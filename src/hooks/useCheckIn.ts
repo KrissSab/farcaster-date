@@ -127,7 +127,8 @@ export const useCheckIn = () => {
 
   const claimCheckIn = () => {
     const data = getCheckInData()
-    const today = new Date().toISOString().split('T')[0]
+    const today = new Date()
+    const todayString = today.toISOString().split('T')[0]
 
     // Calculate new streak
     let newStreak = 1
@@ -138,10 +139,10 @@ export const useCheckIn = () => {
     const reward = calculateReward(newStreak)
 
     // Update weekly check-ins (keep only this week's check-ins)
-    const weeklyCheckIns = [...data.weeklyCheckIns, today]
+    const weeklyCheckIns = [...data.weeklyCheckIns, todayString]
 
     const newData: CheckInData = {
-      lastCheckIn: new Date().toISOString(),
+      lastCheckIn: today.toISOString(),
       streak: newStreak,
       totalCheckIns: data.totalCheckIns + 1,
       tokensEarned: data.tokensEarned + reward,
@@ -152,7 +153,15 @@ export const useCheckIn = () => {
     setStreak(newStreak)
     setCheckInReward(reward)
     setCanClaimToday(false)
-    setWeekDays(getWeekDays())
+
+    // Manually update the week days with the new check-in
+    const updatedDays = weekDays.map(day => {
+      if (day.isToday) {
+        return { ...day, isCheckedIn: true }
+      }
+      return day
+    })
+    setWeekDays(updatedDays)
   }
 
   const closeModal = () => {
