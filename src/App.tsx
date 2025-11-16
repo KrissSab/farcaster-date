@@ -3,8 +3,9 @@ import { useAuth } from './contexts/AuthContext'
 import { useDating } from './hooks/useDating'
 import { SwipeableCard } from './components/SwipeableCard'
 import { MatchesList } from './components/MatchesList'
+import { ProfilePage } from './components/ProfilePage'
 
-type View = 'dating' | 'matches'
+type View = 'dating' | 'matches' | 'profile'
 
 function App() {
   const { user, isLoading, isAuthenticated } = useAuth()
@@ -152,8 +153,10 @@ function App() {
           </div>
 
         </>
-      ) : (
+      ) : currentView === 'matches' ? (
         <MatchesList matches={matches} onRemove={handleRemoveMatch} />
+      ) : (
+        <ProfilePage user={user!} />
       )}
 
       {/* Bottom Navigation */}
@@ -236,14 +239,14 @@ function App() {
             onClick={() => setCurrentView('dating')}
             style={{
               flex: 1,
-              padding: '14px 12px',
+              padding: '14px 8px',
               background: currentView === 'dating'
                 ? 'rgba(255, 255, 255, 0.3)'
                 : 'rgba(255, 255, 255, 0.1)',
               border: 'none',
               borderRadius: '12px',
               color: 'white',
-              fontSize: '1rem',
+              fontSize: '0.95rem',
               fontWeight: currentView === 'dating' ? 'bold' : 'normal',
               cursor: 'pointer',
               transition: 'all 0.2s',
@@ -255,14 +258,14 @@ function App() {
             onClick={() => setCurrentView('matches')}
             style={{
               flex: 1,
-              padding: '14px 12px',
+              padding: '14px 8px',
               background: currentView === 'matches'
                 ? 'rgba(255, 255, 255, 0.3)'
                 : 'rgba(255, 255, 255, 0.1)',
               border: 'none',
               borderRadius: '12px',
               color: 'white',
-              fontSize: '1rem',
+              fontSize: '0.95rem',
               fontWeight: currentView === 'matches' ? 'bold' : 'normal',
               cursor: 'pointer',
               transition: 'all 0.2s',
@@ -285,6 +288,25 @@ function App() {
                 {matchCount}
               </span>
             )}
+          </button>
+          <button
+            onClick={() => setCurrentView('profile')}
+            style={{
+              flex: 1,
+              padding: '14px 8px',
+              background: currentView === 'profile'
+                ? 'rgba(255, 255, 255, 0.3)'
+                : 'rgba(255, 255, 255, 0.1)',
+              border: 'none',
+              borderRadius: '12px',
+              color: 'white',
+              fontSize: '0.95rem',
+              fontWeight: currentView === 'profile' ? 'bold' : 'normal',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            👤 Profile
           </button>
         </div>
       </div>

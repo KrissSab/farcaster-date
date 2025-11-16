@@ -41,6 +41,66 @@ const MOCK_PROFILES: Profile[] = [
     displayName: 'Evan',
     bio: 'Foodie and chef. I cook, you eat? 👨‍🍳',
   },
+  {
+    fid: 6,
+    username: 'fiona',
+    displayName: 'Fiona',
+    bio: 'Book lover and writer. Let\'s share our favorite stories over coffee.',
+  },
+  {
+    fid: 7,
+    username: 'george',
+    displayName: 'George',
+    bio: 'Crypto enthusiast and NFT collector. Building the future of web3.',
+  },
+  {
+    fid: 8,
+    username: 'hannah',
+    displayName: 'Hannah',
+    bio: 'Yoga instructor and nature lover. Peace, love, and good vibes only ✌️',
+  },
+  {
+    fid: 9,
+    username: 'isaac',
+    displayName: 'Isaac',
+    bio: 'Gaming streamer and esports fan. Looking for a co-op partner in life!',
+  },
+  {
+    fid: 10,
+    username: 'julia',
+    displayName: 'Julia',
+    bio: 'Marketing strategist and content creator. Let\'s create something amazing together.',
+  },
+  {
+    fid: 11,
+    username: 'kevin',
+    displayName: 'Kevin',
+    bio: 'Outdoor adventurer and hiking enthusiast. Let\'s hit the trails!',
+  },
+  {
+    fid: 12,
+    username: 'luna',
+    displayName: 'Luna',
+    bio: 'Astronomer and science geek. Want to stargaze with me? 🌟',
+  },
+  {
+    fid: 13,
+    username: 'marco',
+    displayName: 'Marco',
+    bio: 'Professional dancer and music lover. Life is better when you dance!',
+  },
+  {
+    fid: 14,
+    username: 'nina',
+    displayName: 'Nina',
+    bio: 'Fashion designer and sustainable living advocate. Making the world beautiful.',
+  },
+  {
+    fid: 15,
+    username: 'oliver',
+    displayName: 'Oliver',
+    bio: 'Entrepreneur and startup founder. Looking for my co-founder in life and love.',
+  },
 ]
 
 export const useDating = () => {
