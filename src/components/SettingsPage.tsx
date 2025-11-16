@@ -126,6 +126,64 @@ export const SettingsPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Danger Zone */}
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.95)',
+          borderRadius: '20px',
+          padding: '24px',
+          color: '#333',
+          marginTop: '20px',
+        }}>
+          <h2 style={{
+            fontSize: '1.3rem',
+            margin: '0 0 12px 0',
+            fontWeight: 'bold',
+            color: '#e03131',
+          }}>
+            Danger Zone
+          </h2>
+
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px',
+          }}>
+            <div style={{
+              padding: '16px',
+              background: '#fff5f5',
+              border: '1px solid #ffc9c9',
+              borderRadius: '12px',
+            }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#e03131' }}>
+                Clear All Data
+              </div>
+              <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '12px' }}>
+                This will delete all your matches, check-in history, and preferences. This action cannot be undone.
+              </div>
+              <button
+                onClick={() => {
+                  if (window.confirm('Are you sure you want to clear all data? This cannot be undone!')) {
+                    localStorage.clear()
+                    window.location.reload()
+                  }
+                }}
+                style={{
+                  padding: '10px 20px',
+                  background: '#e03131',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: 'white',
+                  fontSize: '0.95rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                }}
+              >
+                Clear All Data
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
