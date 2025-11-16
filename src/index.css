@@ -19,3 +19,17 @@
     color: #181818;
   }
 }
+
+/* Hide desktop-only elements on mobile */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+/* Show desktop-only elements on desktop */
+@media (min-width: 769px) {
+  .desktop-only {
+    display: flex !important;
+  }
+}

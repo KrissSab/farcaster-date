@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { storage } from '../utils/storage'
 
 interface Profile {
   fid: number
@@ -43,18 +44,36 @@ const MOCK_PROFILES: Profile[] = [
 ]
 
 export const useDating = () => {
-  const [profiles] = useState<Profile[]>(MOCK_PROFILES)
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [allProfiles] = useState<Profile[]>(MOCK_PROFILES)
   const [matches, setMatches] = useState<Profile[]>([])
-  const [, setPassed] = useState<number[]>([])
+  const [passed, setPassed] = useState<number[]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
 
-  const currentProfile = profiles[currentIndex] || null
+  // Load saved data on mount
+  useEffect(() => {
+    const savedLikes = storage.getLikedProfiles()
+    const savedPassed = storage.getPassedProfiles()
+
+    setMatches(savedLikes)
+    setPassed(savedPassed)
+  }, [])
+
+  // Filter out profiles that have been liked or passed
+  const availableProfiles = allProfiles.filter(profile => {
+    const isLiked = matches.some(m => m.fid === profile.fid)
+    const isPassed = passed.includes(profile.fid)
+    return !isLiked && !isPassed
+  })
+
+  const currentProfile = availableProfiles[currentIndex] || null
 
   const handleLike = () => {
     if (!currentProfile) return
 
-    // Add to matches
-    setMatches((prev) => [...prev, currentProfile])
+    // Add to matches and save to localStorage
+    const newMatches = [...matches, currentProfile]
+    setMatches(newMatches)
+    storage.addLikedProfile(currentProfile)
 
     // Move to next profile
     setCurrentIndex((prev) => prev + 1)
@@ -63,14 +82,22 @@ export const useDating = () => {
   const handlePass = () => {
     if (!currentProfile) return
 
-    // Add to passed list
-    setPassed((prev) => [...prev, currentProfile.fid])
+    // Add to passed list and save to localStorage
+    const newPassed = [...passed, currentProfile.fid]
+    setPassed(newPassed)
+    storage.addPassedProfile(currentProfile.fid)
 
     // Move to next profile
     setCurrentIndex((prev) => prev + 1)
   }
 
-  const hasMoreProfiles = currentIndex < profiles.length
+  const handleRemoveMatch = (fid: number) => {
+    const filtered = matches.filter(p => p.fid !== fid)
+    setMatches(filtered)
+    storage.removeLikedProfile(fid)
+  }
+
+  const hasMoreProfiles = currentIndex < availableProfiles.length
 
   return {
     currentProfile,
@@ -79,5 +106,6 @@ export const useDating = () => {
     matchCount: matches.length,
     handleLike,
     handlePass,
+    handleRemoveMatch,
   }
 }

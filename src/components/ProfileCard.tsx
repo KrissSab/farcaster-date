@@ -8,11 +8,9 @@ interface Profile {
 
 interface ProfileCardProps {
   profile: Profile
-  onLike: () => void
-  onPass: () => void
 }
 
-export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
+export const ProfileCard = ({ profile }: ProfileCardProps) => {
   return (
     <div style={{
       width: '100%',
@@ -67,63 +65,6 @@ export const ProfileCard = ({ profile, onLike, onPass }: ProfileCardProps) => {
             {profile.bio}
           </p>
         )}
-      </div>
-
-      {/* Action buttons */}
-      <div style={{
-        display: 'flex',
-        gap: '20px',
-        padding: '0 24px 24px',
-        justifyContent: 'center',
-      }}>
-        <button
-          onClick={onPass}
-          style={{
-            width: '70px',
-            height: '70px',
-            borderRadius: '50%',
-            border: '3px solid #ff6b6b',
-            background: 'white',
-            fontSize: '2rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'transform 0.2s',
-          }}
-          onMouseDown={(e) => {
-            e.currentTarget.style.transform = 'scale(0.9)'
-          }}
-          onMouseUp={(e) => {
-            e.currentTarget.style.transform = 'scale(1)'
-          }}
-        >
-          ❌
-        </button>
-        <button
-          onClick={onLike}
-          style={{
-            width: '70px',
-            height: '70px',
-            borderRadius: '50%',
-            border: '3px solid #51cf66',
-            background: 'white',
-            fontSize: '2rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'transform 0.2s',
-          }}
-          onMouseDown={(e) => {
-            e.currentTarget.style.transform = 'scale(0.9)'
-          }}
-          onMouseUp={(e) => {
-            e.currentTarget.style.transform = 'scale(1)'
-          }}
-        >
-          💚
-        </button>
       </div>
     </div>
   )

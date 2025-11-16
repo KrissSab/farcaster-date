@@ -1,10 +1,15 @@
+import { useState } from 'react'
 import { useAuth } from './contexts/AuthContext'
 import { useDating } from './hooks/useDating'
-import { ProfileCard } from './components/ProfileCard'
+import { SwipeableCard } from './components/SwipeableCard'
+import { MatchesList } from './components/MatchesList'
+
+type View = 'dating' | 'matches'
 
 function App() {
   const { user, isLoading, isAuthenticated } = useAuth()
-  const { currentProfile, hasMoreProfiles, matchCount, handleLike, handlePass } = useDating()
+  const { currentProfile, hasMoreProfiles, matches, matchCount, handleLike, handlePass, handleRemoveMatch } = useDating()
+  const [currentView, setCurrentView] = useState<View>('dating')
 
   if (isLoading) {
     return (
@@ -60,85 +65,228 @@ function App() {
       <div style={{
         padding: '20px',
         borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px'
       }}>
-        {user?.pfpUrl && (
-          <img
-            src={user.pfpUrl}
-            alt="Profile"
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '50%',
-              border: '2px solid white'
-            }}
-          />
-        )}
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: '1rem', fontWeight: 'bold' }}>
-            {user?.displayName || user?.username || 'Anonymous'}
-          </div>
-          {user?.username && (
-            <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>
-              @{user.username}
-            </div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+        }}>
+          {user?.pfpUrl && (
+            <img
+              src={user.pfpUrl}
+              alt="Profile"
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                border: '2px solid white'
+              }}
+            />
           )}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '1rem', fontWeight: 'bold' }}>
+              {user?.displayName || user?.username || 'Anonymous'}
+            </div>
+            {user?.username && (
+              <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>
+                @{user.username}
+              </div>
+            )}
+          </div>
+          <div style={{ fontSize: '1.5rem' }}>💜</div>
         </div>
-        <div style={{ fontSize: '1.5rem' }}>💜</div>
       </div>
 
       {/* Main content area */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-        textAlign: 'center',
-        gap: '20px'
-      }}>
-        {/* Match counter */}
-        {matchCount > 0 && (
+      {currentView === 'dating' ? (
+        <>
           <div style={{
-            position: 'absolute',
-            top: '90px',
-            right: '20px',
-            background: 'rgba(81, 207, 102, 0.9)',
-            color: 'white',
-            padding: '8px 16px',
-            borderRadius: '20px',
-            fontSize: '0.9rem',
-            fontWeight: 'bold',
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            textAlign: 'center',
+            gap: '20px'
           }}>
-            💚 {matchCount} {matchCount === 1 ? 'Match' : 'Matches'}
+            {hasMoreProfiles && currentProfile ? (
+              <SwipeableCard
+                profile={currentProfile}
+                onSwipeLeft={handlePass}
+                onSwipeRight={handleLike}
+              />
+            ) : (
+            <div style={{
+              textAlign: 'center',
+              maxWidth: '400px',
+            }}>
+              <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎉</div>
+              <h2 style={{ fontSize: '1.8rem', margin: '0 0 10px 0' }}>
+                {matchCount > 0 ? "Great job!" : "No more profiles"}
+              </h2>
+              <p style={{ fontSize: '1rem', opacity: 0.9, marginBottom: '20px' }}>
+                {matchCount > 0
+                  ? `You've made ${matchCount} ${matchCount === 1 ? 'match' : 'matches'}! Check back later for more profiles.`
+                  : "Check back later for more people to connect with."}
+              </p>
+              {matchCount > 0 && (
+                <button
+                  onClick={() => setCurrentView('matches')}
+                  style={{
+                    padding: '12px 24px',
+                    background: 'rgba(255, 255, 255, 0.3)',
+                    border: '2px solid white',
+                    borderRadius: '12px',
+                    color: 'white',
+                    fontSize: '1rem',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                  }}
+                >
+                  View Matches
+                </button>
+              )}
+            </div>
+          )}
+          </div>
+
+        </>
+      ) : (
+        <MatchesList matches={matches} onRemove={handleRemoveMatch} />
+      )}
+
+      {/* Bottom Navigation */}
+      <div style={{
+        borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+        background: 'rgba(102, 126, 234, 0.3)',
+        backdropFilter: 'blur(10px)',
+      }}>
+        {/* Action buttons for desktop - only show in dating view when there are profiles */}
+        {currentView === 'dating' && hasMoreProfiles && currentProfile && (
+          <div style={{
+            padding: '16px 20px',
+            display: 'flex',
+            gap: '20px',
+            justifyContent: 'center',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          }}
+          className="desktop-only"
+          >
+            <button
+              onClick={handlePass}
+              style={{
+                width: '70px',
+                height: '70px',
+                borderRadius: '50%',
+                border: '3px solid #ff6b6b',
+                background: 'white',
+                fontSize: '2rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'transform 0.2s',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'scale(0.9)'
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'scale(1)'
+              }}
+            >
+              ❌
+            </button>
+            <button
+              onClick={handleLike}
+              style={{
+                width: '70px',
+                height: '70px',
+                borderRadius: '50%',
+                border: '3px solid #51cf66',
+                background: 'white',
+                fontSize: '2rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'transform 0.2s',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+              }}
+              onMouseDown={(e) => {
+                e.currentTarget.style.transform = 'scale(0.9)'
+              }}
+              onMouseUp={(e) => {
+                e.currentTarget.style.transform = 'scale(1)'
+              }}
+            >
+              💚
+            </button>
           </div>
         )}
 
-        {hasMoreProfiles && currentProfile ? (
-          <ProfileCard
-            profile={currentProfile}
-            onLike={handleLike}
-            onPass={handlePass}
-          />
-        ) : (
-          <div style={{
-            textAlign: 'center',
-            maxWidth: '400px',
-          }}>
-            <div style={{ fontSize: '4rem', marginBottom: '20px' }}>🎉</div>
-            <h2 style={{ fontSize: '1.8rem', margin: '0 0 10px 0' }}>
-              {matchCount > 0 ? "Great job!" : "No more profiles"}
-            </h2>
-            <p style={{ fontSize: '1rem', opacity: 0.9 }}>
-              {matchCount > 0
-                ? `You've made ${matchCount} ${matchCount === 1 ? 'match' : 'matches'}! Check back later for more profiles.`
-                : "Check back later for more people to connect with."}
-            </p>
-          </div>
-        )}
+        {/* Navigation tabs */}
+        <div style={{
+          display: 'flex',
+          gap: '8px',
+          padding: '12px 20px 16px',
+        }}>
+          <button
+            onClick={() => setCurrentView('dating')}
+            style={{
+              flex: 1,
+              padding: '14px 12px',
+              background: currentView === 'dating'
+                ? 'rgba(255, 255, 255, 0.3)'
+                : 'rgba(255, 255, 255, 0.1)',
+              border: 'none',
+              borderRadius: '12px',
+              color: 'white',
+              fontSize: '1rem',
+              fontWeight: currentView === 'dating' ? 'bold' : 'normal',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            💝 Discover
+          </button>
+          <button
+            onClick={() => setCurrentView('matches')}
+            style={{
+              flex: 1,
+              padding: '14px 12px',
+              background: currentView === 'matches'
+                ? 'rgba(255, 255, 255, 0.3)'
+                : 'rgba(255, 255, 255, 0.1)',
+              border: 'none',
+              borderRadius: '12px',
+              color: 'white',
+              fontSize: '1rem',
+              fontWeight: currentView === 'matches' ? 'bold' : 'normal',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              position: 'relative',
+            }}
+          >
+            💚 Matches
+            {matchCount > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '6px',
+                right: '6px',
+                background: '#51cf66',
+                color: 'white',
+                borderRadius: '10px',
+                padding: '2px 8px',
+                fontSize: '0.75rem',
+                fontWeight: 'bold',
+              }}>
+                {matchCount}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   )
