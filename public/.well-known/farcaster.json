@@ -4,7 +4,7 @@
       "payload": "eyJkb21haW4iOiJmYXJjYXN0ZXItZGF0ZS52ZXJjZWwuYXBwIn0",
       "signature": "ATqWNv86XBKI8YJo+Ni2noLctFKsELvDvbxmWe4TjmdHbg9DPDkjxSNpD9yQJO/BoPf5hDnR7n8SWK7xw+mfWRs="
     },
-    "frame": {
+    "miniapp": {
       "version": "1",
       "name": "Daty",
       "iconUrl": "https://farcaster-date.vercel.app/icon.png",
