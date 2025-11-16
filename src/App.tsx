@@ -58,8 +58,7 @@ function App() {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      height: '100vh',
-      maxHeight: '695px',
+      height: '100%',
       overflow: 'hidden',
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       color: 'white',
@@ -95,9 +94,14 @@ function App() {
             justifyContent: 'center',
             cursor: 'pointer',
             fontSize: '1.2rem',
+            color: 'white',
+            padding: 0,
+            flexShrink: 0,
+            fontFamily: 'Arial, sans-serif',
+            fontWeight: 'bold',
           }}
         >
-          ☰
+          ≡
         </button>
       </div>
 
@@ -228,14 +232,21 @@ function App() {
                   background: 'rgba(255, 255, 255, 0.2)',
                   border: 'none',
                   borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
+                  width: '40px',
+                  height: '40px',
+                  minWidth: '40px',
+                  minHeight: '40px',
+                  maxWidth: '40px',
+                  maxHeight: '40px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  fontSize: '1.2rem',
+                  fontSize: '1.5rem',
                   color: 'white',
+                  lineHeight: 1,
+                  padding: 0,
+                  flexShrink: 0,
                 }}
               >
                 ✕
